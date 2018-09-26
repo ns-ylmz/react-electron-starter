@@ -1,0 +1,58 @@
+{
+  "name": "electron-hello-world",
+  "version": "1.0.0",
+  "description": "Basic Electron & React/Redux Boilerplate",
+  "main": "main.js",
+  "scripts": {
+    "bundle": "NODE_ENV=development webpack-dev-server --mode=development --hot",
+    "serve": "electron .",
+    "start": "npm-run-all --parallel bundle serve"
+  },
+  "keywords": [
+    "electron",
+    "react16",
+    "redux",
+    "es6",
+    "sass",
+    "webpack4",
+    "react-router4"
+  ],
+  "author": "Enes YILMAZ",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^9.1.5",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.19",
+    "css-loader": "^1.0.0",
+    "electron": "^3.0.0",
+    "electron-reload": "^1.2.5",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.4.3",
+    "node-sass": "^4.9.3",
+    "npm-run-all": "^4.1.3",
+    "postcss-loader": "^3.0.0",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.0",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.1",
+    "webpack-dev-server": "^3.1.9",
+    "webpack-md5-hash": "0.0.6"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.2",
+    "pouchdb-browser": "^7.0.0",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-router-dom": "^4.3.1",
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0",
+    "rxjs": "^6.3.3"
+  }
+}
