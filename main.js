@@ -10,7 +10,13 @@ require('electron-reload')(__dirname)
 let mainWindow;
 
 function createWindow() {
-    mainWindow = new BrowserWindow({ height: 600, width: 800 });
+    mainWindow = new BrowserWindow({
+        height: 600,
+        width: 800,
+        webPreferences: {
+            webSecurity: false
+        } 
+    });
 
     mainWindow.loadURL(`http://localhost:8080`);
 

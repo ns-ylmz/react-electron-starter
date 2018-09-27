@@ -1,15 +1,16 @@
 // npm packages
-// const axios = require('axios');
-// const cheerio = require('cheerio');
 import axios from 'axios';
 import cheerio from 'cheerio';
+
+// our packages
+import db from '../db';
 
 // base url used for most requests
 const baseURL = 'http://www.crunchyroll.com';
 
 // main module
 export const Crunchyroll = {
-    async getAllSeries(page = 0) {
+    getAllSeries: async (page = 0) => {
         // load catalogue
         const { data } = await axios.get(`${baseURL}/videos/anime/populer/ajax_page?pg=${page}`);
         // create cheerio cursor
@@ -36,23 +37,25 @@ export const Crunchyroll = {
                     count
                 };
             }).get();
-            
+            // store in the db
+            await db.series.bulkDocs(series);
+
             return series;
     },
 
-    getEpisodes(series) {
+    getEpisodes: (series) => {
 
     },
 
-    getEpisode(episode) {
+    getEpisode:  (episode) => {
 
     },
 
-    getMySeries() {
+    getMySeries: () => {
 
     },
 
-    search(query) {
+    search: (query) => {
 
     }
 }

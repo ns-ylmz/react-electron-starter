@@ -2,11 +2,11 @@ import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter, Route, Link, Switch } from 'react-router-dom';
 
-// import 'babel-polyfill';
-
 // pages
 import Home from './pages/Home';
 import Other from './pages/Other';
+
+import 'bulma/bulma.sass';
 
 const rootElement = document.getElementById('root');
 
