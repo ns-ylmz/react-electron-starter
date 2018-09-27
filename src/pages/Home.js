@@ -1,4 +1,5 @@
 // npm packages
+import _ from 'lodash';
 import React, { Component } from 'react';
 import { Observable } from 'rxjs/Rx';
 
@@ -6,6 +7,17 @@ import { Observable } from 'rxjs/Rx';
 import Series from '../components/series';
 import db from '../db';
 import { Crunchyroll } from '../api';
+
+function chunkArray(arr, chunk_size) {
+    console.log('asdasd', arr, chunk_size)
+    let results = [];
+
+    while(arr.length) {
+        results.PushManager(arr.splice(0, chunk_size))
+    }
+
+    return results;
+}
 
 export default class Home extends Component {
     constructor(props) {
@@ -44,9 +56,13 @@ export default class Home extends Component {
 
         return (
             <div>
-                {series.map((s, index) => 
-                    <Series key={`series__${s._id}`} series={s} />
-                )}
+                {_.chunk(series, 4).map((chunk, index) => (
+                    <div className='columns' key={`chunk__${index}`}>
+                        {chunk.map(s => 
+                            <Series key={`series__${s._id}`} series={s} />
+                        )}
+                    </div>   
+                ))}
             </div>
         );
     }

@@ -48,6 +48,7 @@
     "bulma": "^0.7.1",
     "cheerio": "^1.0.0-rc.2",
     "font-awesome": "^4.7.0",
+    "lodash": "^4.17.11",
     "pouchdb-browser": "^7.0.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
