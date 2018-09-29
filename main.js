@@ -20,7 +20,7 @@ function createWindow() {
 
     mainWindow.loadURL(`http://localhost:8080`);
 
-    //win.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', () => {
         mainWindow = null;

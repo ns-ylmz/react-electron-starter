@@ -4,24 +4,25 @@ import React, { Component } from 'react';
 import { Observable } from 'rxjs/Rx';
 
 // our packages
-import Series from '../components/series';
+import Episode from '../components/episode';
 import db from '../db';
 import { Crunchyroll } from '../api';
 
-export default class Home extends Component {
+export default class Series extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            series: []
+            episodes: []
         };
-        // trigger the list update
-        Crunchyroll.getAllSeries();
+
+        const { location } = props;
+        Crunchyroll.getEpisodes(location.state);
     }
 
     componentDidMount() {
         this.sub = Observable.fromEvent(
-            db.series.changes({
+            db.episodes.changes({
                 since: 0,
                 live: true,
                 include_docs: true
@@ -33,26 +34,22 @@ export default class Home extends Component {
         .map(change => change.doc)
         .scan((acc, doc) => acc.concat([doc]), [])
         .debounceTime(1000)
-        .subscribe(series => this.setState({ series }));
-    }
-
-    componentWillUnmount() {
-        this.sub.unsubscribe();
+        .subscribe(episodes => this.setState({ episodes }));
     }
 
     render() {
-        const { series } = this.state;
+        const { episodes } = this.state;
 
         return (
             <div>
-                {_.chunk(series, 4).map((chunk, index) => (
+                {_.chunk(episodes, 4).map((chunk, index) => (
                     <div className='columns' key={`chunk__${index}`}>
-                        {chunk.map(s => 
-                            <Series key={`series__${s._id}`} series={s} />
+                        {chunk.map(ep => 
+                            <Episode key={`series__${ep._id}`} episode={ep} />
                         )}
                     </div>   
                 ))}
             </div>
         );
     }
-}
+};
