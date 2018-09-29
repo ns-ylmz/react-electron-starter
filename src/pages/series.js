@@ -1,6 +1,7 @@
 // npm packages
 import _ from 'lodash';
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Observable } from 'rxjs/Rx';
 
 // our packages
@@ -42,6 +43,18 @@ export default class Series extends Component {
 
         return (
             <div>
+                <nav className="nav">
+                    <div className="nav-left nav-menu">
+                        <div className="nav-item">
+                            <Link to={'/'} className="button">
+                                <span className="icon">
+                                    <i className="fa fa-arrow-left" />
+                                </span>
+                                <span>Back</span>
+                            </Link>
+                        </div>
+                    </div>
+                </nav>
                 {_.chunk(episodes, 4).map((chunk, index) => (
                     <div className='columns' key={`chunk__${index}`}>
                         {chunk.map(ep => 

@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Home from './pages/home';
 import Series from './pages/series';
 
+import 'font-awesome/scss/font-awesome.scss';
 import 'bulma/bulma.sass';
 
 const rootElement = document.getElementById('root');
