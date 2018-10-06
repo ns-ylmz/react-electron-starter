@@ -9,7 +9,6 @@ export default withRouter(({ episode, history }) => {
             pathname: `/episode${episode._id}`,
             state: episode
         };
-
         history.push(location);
     };
 

@@ -1,29 +1,18 @@
 // npm packages
 import axios from 'axios';
 import cheerio from 'cheerio';
-import path from 'path';
-// import electron from 'electron';
-const electron = window.require('electron');
-const fs = window.require('fs');
-const { spawn } = window.require('child_process');
-// import fs from 'fs';
-// import { spawn } from 'child_process';
+import querystring from 'querystring';
+import { M3U } from 'playlist-parser';
+//import * as electron from 'electron';
 
 // our packages
-import db from '../db';
+import db from '../../db';
+import parseXml from './parseXml';
+import decode from './subtitles/index';
+import bytesToAss from './subtitles/ass';
 
 // base url used for most requests
 const baseURL = 'http://www.crunchyroll.com';
-
-// folder for videos
-const userDataPath = (electron.app || electron.remote.app).getPath('userData');
-const targetFolder = path.join(userDataPath, 'crunchyroll');
-
-try {
-    fs.accessSync(targetFolder);
-} catch (error) {
-    fs.mkdirSync(targetFolder);
-}
 
 // main module
 export const Crunchyroll = {
@@ -93,15 +82,68 @@ export const Crunchyroll = {
             return episodes;
     },
 
-    getEpisode:  (episode) => {
-        console.log('loading episode: ', episode);
-        const dl = spawn('youtube-dl', [episode.url], { cwd: targetFolder });
-        dl.stdout.on('data', data => {
-            console.log('youtube-dl data', data.toString());
+    getEpisode:  async (episode) => {
+        // load episode page
+        const { data } = await axios.get(episode.url);
+        // load into cheerio
+        const $ = cheerio.load(data);
+        // find available formats
+        const formats = [];
+
+        $('a[token^=showmedia]').each((index, el) => {
+            const token = $(el).attr('token');
+            if (!token.includes('showmedia.')) return;
+            const formatId = token.replace('showmedia.', '').replace(/p$/, '');
+            formats.push(formatId);
         });
-        dl.stderr.on('data', data => {
-            console.log('youtube-dl error', data.toString());
+
+        const format = formats[0] || '480p';
+        const idRegex = /([0-9]+)$/g;
+        const idMatches = idRegex.exec(episode.url);
+        const id = idMatches[0];
+
+        const xmlUrl = `http://www.crunchyroll.com/xml/?req=RpcApiVideoPlayer_GetStandardConfig&media_id=${id}&video_format=${format}&video_quality=${format}`;
+        const { data: xmlData } = await axios({
+            url: xmlUrl,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: querystring.stringify({
+                current_page: episode.url
+            })
         });
+
+        const xmlObj = await parseXml(xmlData);
+        const preload = xmlObj['config:Config']['default:preload'][0];
+        const subtitlesInfo = preload.subtitles[0].subtitle;
+        const streamInfo = preload.stream_info[0];
+        const streamFile = streamInfo.file[0];
+
+        // load stream urls playlist
+        const { data: streamFileData } = await axios.get(streamFile);
+        const playlist = M3U.parse(streamFileData);
+
+        // get subtitles
+        const englishSubs = subtitlesInfo.map(s => s.$).filter(s => s.title.includes('English')).pop();
+        const { data: subData } = await axios(englishSubs.link);
+        const subsObj = await parseXml(subData);
+        const subsId = parseInt(subsObj.subtitle.$.id, 10);
+        const subsIv = subsObj.subtitle.iv.pop();
+        const subsData = subsObj.subtitle.data.pop();
+
+        const subBytes = await decode(subsId, subsIv, subsData);
+        const subtitlesText = await bytesToAss(subBytes);
+        const subBlob = new Blob([subtitlesText], {
+            type: 'application/octet-binary',
+        });
+
+        // construct response
+        const subtitles = URL.createObjectURL(subBlob);
+        const url = playlist.pop().file;
+        const type = 'application/x-mpegURL';
+
+        return { type, url, subtitles };
     },
 
     getMySeries: () => {

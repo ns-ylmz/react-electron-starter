@@ -5,12 +5,14 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
-	entry: { main: './src/index.js' },
+	entry: {
+		main: './src/index.js'
+	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
 		filename: '[name].[hash].js'
 	},
-	devtool: 'inline-source-map',
+	devtool: 'cheap-source-map',
 	devServer: {
 		contentBase: './dist'
 	},
@@ -22,6 +24,15 @@ module.exports = {
 				use: {
 					loader: 'babel-loader'
 				}
+			},
+			{
+				test: /\.css$/,
+				use: [
+					'style-loader',
+					MiniCssExtractPlugin.loader,
+					'css-loader',
+					'postcss-loader'
+				]
 			},
 			{
 				test: /\.s(c|a)ss$/,
@@ -69,5 +80,10 @@ module.exports = {
 			filename: 'index.html'
 		}),
 		new WebpackMd5Hash()
-	]
+	],
+	resolve: {
+		alias: {
+			webworkify: 'webworkify-webpack-dropin'
+		}
+	}
 };

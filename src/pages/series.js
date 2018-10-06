@@ -17,8 +17,8 @@ export default class Series extends Component {
             episodes: []
         };
 
-        const { location } = props;
-        Crunchyroll.getEpisodes(location.state);
+        // trigger episode loading
+        this.init(props);
     }
 
     componentDidMount() {
@@ -29,13 +29,17 @@ export default class Series extends Component {
                 include_docs: true
             }),
             'change'
-        )
-        .map(changes => changes[0])
+        ).map(changes => changes[0])
         .filter(change => !change.deleted)
         .map(change => change.doc)
         .scan((acc, doc) => acc.concat([doc]), [])
         .debounceTime(1000)
         .subscribe(episodes => this.setState({ episodes }));
+    }
+
+    async init(props) {
+        const { location } = props;
+        await Crunchyroll.getEpisodes(location.state);
     }
 
     render() {
@@ -46,7 +50,7 @@ export default class Series extends Component {
                 <nav className="nav">
                     <div className="nav-left nav-menu">
                         <div className="nav-item">
-                            <Link to={'/'} className="button">
+                            <Link to="/" className="button">
                                 <span className="icon">
                                     <i className="fa fa-arrow-left" />
                                 </span>
@@ -57,10 +61,10 @@ export default class Series extends Component {
                 </nav>
                 {_.chunk(episodes, 4).map((chunk, index) => (
                     <div className='columns' key={`chunk__${index}`}>
-                        {chunk.map(ep => 
+                        {chunk.map(ep =>
                             <Episode key={`series__${ep._id}`} episode={ep} />
                         )}
-                    </div>   
+                    </div>
                 ))}
             </div>
         );

@@ -1,1 +1,1 @@
-export { Crunchyroll } from './crunchyroll';
+export { Crunchyroll } from './crunchyroll/index';

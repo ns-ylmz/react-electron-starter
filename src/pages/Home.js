@@ -15,6 +15,7 @@ export default class Home extends Component {
         this.state = {
             series: []
         };
+
         // trigger the list update
         Crunchyroll.getAllSeries();
     }
